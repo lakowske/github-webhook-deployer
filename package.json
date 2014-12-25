@@ -1,0 +1,31 @@
+{
+  "name": "github-webhook-deployer",
+  "version": "0.0.1",
+  "description": "Deploys changes using github push events.",
+  "main": "index.js",
+  "scripts": {
+    "test": "node test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/lakowske/github-webhook-deployer.git"
+  },
+  "keywords": [
+    "github",
+    "webhook",
+    "deployer",
+    "push",
+    "deploy"
+  ],
+  "author": "Seth Lakowske",
+  "license": "BSD",
+  "bugs": {
+    "url": "https://github.com/lakowske/github-webhook-deployer/issues"
+  },
+  "homepage": "https://github.com/lakowske/github-webhook-deployer",
+  "dependencies": {
+    "git-pull": "^0.1.0",
+    "git-rev": "^0.2.1",
+    "github-webhook-handler": "^0.3.4"
+  }
+}
