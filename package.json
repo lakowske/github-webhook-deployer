@@ -24,8 +24,13 @@
   },
   "homepage": "https://github.com/lakowske/github-webhook-deployer",
   "dependencies": {
+    "bl": "^0.9.3",
     "git-pull": "^0.1.0",
     "git-rev": "^0.2.1",
     "github-webhook-handler": "^0.3.4"
+  },
+  "devDependencies": {
+    "github-push-event": "git://github.com/lakowske/github-push-event",
+    "tape": "^3.0.3"
   }
 }
