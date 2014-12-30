@@ -27,6 +27,7 @@ test('can receive push events', function(t) {
     })
 
     b.write(event);
+
     b.end();
 
     var port = 3334;
@@ -49,6 +50,9 @@ test('can receive push events', function(t) {
     })
 
     //send the push event
-    push.push();
+    push.push(function() {
+        deployer.close();
+        t.end();
+    });
 })
 
