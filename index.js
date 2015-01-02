@@ -20,12 +20,13 @@ function Deployer(options) {
 Deployer.prototype.listen = function(port) {
     var handler = createHandler(this.options);
 
-    http.createServer(function (req, res) {
+    this.server = http.createServer(function (req, res) {
         handler(req, res, function (err) {
             res.statusCode = 404
             res.end('no such location')
         })
-    }).listen(port)
+    })
+    this.server.listen(port)
 
     handler.on('error', function (err) {
         console.error('Error:', err.message)
@@ -36,10 +37,20 @@ Deployer.prototype.listen = function(port) {
                     event.payload.repository.name,
                     event.payload.ref)
 
+        var refParts = event.payload.ref.split('/');
+
+        //Warning: not sure if this is valid in all cases
+        var pushBranch = refParts[refParts.length-1];
+        console.log('push branch name: ' + pushBranch);
+
         //console.log(JSON.stringify(event));
         //get our current branch
-        git.branch(function (str) {
-            console.log('branch', str)
+        git.branch(function (cwdBranch) {
+            console.log('current working directory branch name ', cwdBranch)
+
+            if (cwdBranch !== pushBranch) {
+                return;
+            }
 
             //pull the latest changes
             gitPull('./', function (err, consoleOutput) {
@@ -64,6 +75,10 @@ Deployer.prototype.listen = function(port) {
 
 
     })
+}
+
+Deployer.prototype.close = function() {
+    this.server.close();
 }
 
 module.exports = Deployer;
