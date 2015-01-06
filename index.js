@@ -19,13 +19,36 @@ function Deployer(options) {
 
 Deployer.prototype.listen = function(port) {
     var handler = createHandler(this.options);
+    var version = 'blah';
 
     this.server = http.createServer(function (req, res) {
-        handler(req, res, function (err) {
-            res.statusCode = 404
-            res.end('no such location')
-        })
+        console.log('url: ' + req.url);
+        var message = 'hi';
+
+
+
+        if (req.url === '/version') {
+
+            var gitRespFunction = function(version) {
+                res.setHeader('Content-Type', 'text/plain');
+                console.log(version);
+                res.end(version);
+            }
+
+            git.long(gitRespFunction);
+
+        } else {
+
+            handler(req, res, function (err) {
+                res.statusCode = 404
+                res.end('no such location')
+            })
+
+        }
+
+
     })
+
     this.server.listen(port)
 
     handler.on('error', function (err) {

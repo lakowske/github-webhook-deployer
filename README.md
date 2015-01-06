@@ -2,7 +2,7 @@ github-webhook-deployer deploys changes using github push events.
 
 1. When a push event occurs, the current directory's branch is compared to the push event branch.
 2. If they are the same, git pull is called and the server process terminates.
-3. The server process restarts using forever (or an equivelent daemon manager).
+3. The server process restarts by forever (or an equivelent daemon manager).
 4. Deployment is complete and you are running the latest code.
 
 For example, somewhere in the cloud there are two copies of a server, production and development.
