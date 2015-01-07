@@ -4,6 +4,7 @@
 
 var gitPull       = require('git-pull');
 var git           = require('git-rev');
+var exec          = require('child_process').exec;
 var createHandler = require('github-webhook-handler');
 var http          = require('http');
 
@@ -22,16 +23,11 @@ Deployer.prototype.listen = function(port) {
     var version = 'blah';
 
     this.server = http.createServer(function (req, res) {
-        console.log('url: ' + req.url);
-        var message = 'hi';
-
-
 
         if (req.url === '/version') {
 
             var gitRespFunction = function(version) {
                 res.setHeader('Content-Type', 'text/plain');
-                console.log(version);
                 res.end(version);
             }
 
@@ -81,7 +77,11 @@ Deployer.prototype.listen = function(port) {
                     console.error("Error!", err, consoleOutput);
                 } else {
                     console.log("Success!", consoleOutput);
-                    process.exit(0);
+                    exec('npm install', function(err, stdout, stderr) {
+                        console.log(stdout.split('\n').join(''));
+                        process.exit(0);
+                    });
+
                 }
             });
 

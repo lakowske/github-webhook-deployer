@@ -7,8 +7,10 @@ var fs     = require('fs');
 var bl     = require('bl');
 var crypto = require('crypto');
 
+console.log('Usage: node push.js localhost');
+
 var port = 3334;
-var server = 'sethlakowske.com';
+var server = process.argv[2];
 var path = '/webhook';
 
 function signBlob (key, blob) {
