@@ -2,14 +2,15 @@
  * (C) Seth Lakowske
  */
 
-var Deployer = require('./');
-var test     = require('tape');
-var Push     = require('github-push-event');
-var fs       = require('fs');
-var crypto   = require('crypto');
-var bl       = require('bl');
-var http     = require('http');
-var git      = require('git-rev');
+var Deployer  = require('./');
+var test      = require('tape');
+var Push      = require('github-push-event').Push;
+var PushEvent = require('github-push-event').PushEvent;
+var fs        = require('fs');
+var crypto    = require('crypto');
+var bl        = require('bl');
+var http      = require('http');
+var git       = require('git-rev');
 
 function signBlob (key, blob) {
   return 'sha1=' +
@@ -21,8 +22,18 @@ test('can receive push events', function(t) {
     var dataSign = 'faked';
     var event    = 'faked';
 
-    //read in event template
-    var event = fs.readFileSync('pushEvent.txt');
+    //build a push event
+    var pushEvent = new PushEvent();
+    var event = pushEvent.get({
+        'ref'   :'refs/heads/master',
+        'before':'171c2ede2a4ccc4f108bb19438fce8729031336d',
+        'after' :'171c2ede2a4ccc4f108bb19438fce8729031336e',
+        'commit':'171c2ede2a4ccc4f108bb19438fce8729031336e',
+        'username'  :'someUser',
+        'repository':'someRepo',
+        'email'     :'some@email.com'
+    });
+
     var b     = bl(function(err, data) {
         dataSig   = signBlob('testSecret', data);
         event = data;
@@ -59,19 +70,6 @@ test('can receive push events', function(t) {
 })
 
 test('can send current version', function(t) {
-    var dataSign = 'faked';
-    var event    = 'faked';
-
-    //read in event template
-    var event = fs.readFileSync('pushEvent.txt');
-    var b     = bl(function(err, data) {
-        dataSig   = signBlob('testSecret', data);
-        event = data;
-    })
-
-    b.write(event);
-    b.end();
-
     var port = 3334;
     var path = '/webhook';
 
@@ -100,6 +98,7 @@ test('can send current version', function(t) {
         res.on('end', function() {
             git.long(function(version) {
                 t.strictEqual(responseString, version, 'versions should match');
+                deployer.close();
                 t.end();
             })
         })
@@ -112,5 +111,4 @@ test('can send current version', function(t) {
     });
 
     req.end();
-
 })

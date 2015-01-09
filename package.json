@@ -18,7 +18,7 @@
     "deploy"
   ],
   "author": "Seth Lakowske",
-  "license": "BSD",
+  "license": "BSD-3",
   "bugs": {
     "url": "https://github.com/lakowske/github-webhook-deployer/issues"
   },
@@ -30,7 +30,7 @@
     "github-webhook-handler": "^0.3.4"
   },
   "devDependencies": {
-    "github-push-event": "git://github.com/lakowske/github-push-event",
+    "github-push-event": "^0.0.4",
     "tape": "^3.0.3"
   }
 }
