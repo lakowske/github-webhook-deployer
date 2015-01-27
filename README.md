@@ -20,7 +20,7 @@ var server   = http.createServer(deployer({
 
 # Example
 
-For example, somewhere in the cloud there are two copies of a server, production and development.
+Somewhere in the cloud there are two copies of a server, production and development.
 The production branch is in ~/production and the development is in ~/development.
 Both servers are started using the daemon manager forever.
 
