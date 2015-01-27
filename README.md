@@ -15,7 +15,7 @@ var server   = http.createServer(deployer({
 
 1. When a push event occurs, the current directory's branch is compared to the push event branch.
 2. If they are the same, git pull; npm install and then terminate the server process.
-3. The server process restarts by forever (or an equivelent daemon manager).
+3. The server process is restarted by foreverjs (or an equivelent daemon manager).
 4. Deployment is complete and you are running the latest code.
 
 # Example
