@@ -4,7 +4,11 @@ deploys changes using github push events.
 
 ``` js
 var deployer = require('github-webhook-deployer');
-var server   = http.createServer(deployer({ path : '/webhook', secret : 'testSecret' })).listen(3000);
+
+var server   = http.createServer(deployer({
+    path : '/webhook',
+    secret : 'testSecret' 
+})).listen(3000);
 ```
 
 # Operation
