@@ -6,7 +6,6 @@ var gitPull       = require('git-pull');
 var git           = require('git-rev');
 var exec          = require('child_process').exec;
 var createHandler = require('github-webhook-handler');
-var http          = require('http');
 
 /*
  * Deployer listens for github push events and pulls the changes
@@ -14,47 +13,15 @@ var http          = require('http');
  * process and the daemon manager (forever) relaunches the server with
  * the up-to-date code.
  */
-function Deployer(options) {
-    this.options = options;
-}
-
-Deployer.prototype.listen = function(port) {
-    var handler = createHandler(this.options);
-    var version = 'blah';
-
-    this.server = http.createServer(function (req, res) {
-
-        if (req.url === '/version') {
-
-            var gitRespFunction = function(version) {
-                res.setHeader('Content-Type', 'text/plain');
-                res.end(version);
-            }
-
-            git.long(gitRespFunction);
-
-        } else {
-
-            handler(req, res, function (err) {
-                res.statusCode = 404
-                res.end('no such location')
-            })
-
-        }
-
-
-    })
-
-    this.server.listen(port)
+function deployer(options) {
+    var handler = createHandler(options);
+    var version = null;
 
     handler.on('error', function (err) {
         console.error('Error:', err.message)
     })
 
     handler.on('push', function (event) {
-        console.log('Received a push event for %s to %s',
-                    event.payload.repository.name,
-                    event.payload.ref)
 
         var refParts = event.payload.ref.split('/');
 
@@ -62,10 +29,9 @@ Deployer.prototype.listen = function(port) {
         var pushBranch = refParts[refParts.length-1];
         console.log('push branch name: ' + pushBranch);
 
-        //console.log(JSON.stringify(event));
         //get our current branch
         git.branch(function (cwdBranch) {
-            console.log('current working directory branch name ', cwdBranch)
+            console.log('current branch name ', cwdBranch)
 
             if (cwdBranch !== pushBranch) {
                 return;
@@ -89,19 +55,29 @@ Deployer.prototype.listen = function(port) {
 
     })
 
-    handler.on('issues', function (event) {
-        console.log('Received an issue event for % action=%s: #%d %s',
-                    event.payload.repository.name,
-                    event.payload.action,
-                    event.payload.issue.number,
-                    event.payload.issue.title)
+    return function(req, res) {
+
+        if (req.url === '/version') {
+
+            var gitRespFunction = function(version) {
+                res.setHeader('Content-Type', 'text/plain');
+                res.end(version);
+            }
+
+            git.long(gitRespFunction);
+
+        } else {
+
+            handler(req, res, function (err) {
+                res.statusCode = 404
+                res.end('no such location')
+            })
+
+        }
+
+     }
 
 
-    })
 }
 
-Deployer.prototype.close = function() {
-    this.server.close();
-}
-
-module.exports = Deployer;
+module.exports = deployer;

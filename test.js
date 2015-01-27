@@ -2,7 +2,7 @@
  * (C) Seth Lakowske
  */
 
-var Deployer  = require('./');
+var deployer  = require('./');
 var test      = require('tape');
 var Push      = require('github-push-event').Push;
 var PushEvent = require('github-push-event').PushEvent;
@@ -47,9 +47,7 @@ test('can receive push events', function(t) {
 
     var path = '/webhook';
 
-    var deployer = new Deployer({ path : path, secret : 'testSecret' });
-
-    deployer.listen(port);
+    var server = http.createServer(deployer({ path : path, secret : 'testSecret' })).listen(port);
 
     //describe the webhook push event
     var push = new Push({
@@ -64,7 +62,7 @@ test('can receive push events', function(t) {
 
     //send the push event
     push.push(function() {
-        deployer.close();
+        server.close();
         t.end();
     });
 })
@@ -73,9 +71,7 @@ test('can send current version', function(t) {
     var port = 3334;
     var path = '/webhook';
 
-    var deployer = new Deployer({ path : path, secret : 'testSecret' });
-
-    deployer.listen(port);
+    var server = http.createServer(deployer({ path : path, secret : 'testSecret' })).listen(port);
 
     var req = http.request({
         hostname : 'localhost',
@@ -98,7 +94,7 @@ test('can send current version', function(t) {
         res.on('end', function() {
             git.long(function(version) {
                 t.strictEqual(responseString, version, 'versions should match');
-                deployer.close();
+                server.close();
                 t.end();
             })
         })

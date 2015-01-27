@@ -1,9 +1,20 @@
-github-webhook-deployer deploys changes using github push events.
+# github-webhook-deployer 
+
+deploys changes using github push events.
+
+``` js
+var deployer = require('github-webhook-deployer');
+var server   = http.createServer(deployer({ path : '/webhook', secret : 'testSecret' })).listen(3000);
+```
+
+# Operation
 
 1. When a push event occurs, the current directory's branch is compared to the push event branch.
 2. If they are the same, git pull; npm install and then terminate the server process.
 3. The server process restarts by forever (or an equivelent daemon manager).
 4. Deployment is complete and you are running the latest code.
+
+# Example
 
 For example, somewhere in the cloud there are two copies of a server, production and development.
 The production branch is in ~/production and the development is in ~/development.
@@ -21,3 +32,7 @@ Once satisfied the development server is stable, he/she can merge the changes in
 production branch. Another push event is triggerd and this time the production server sees the 
 update, pulls in the changes and restarts.  No SSHing into the server, git pulling, and 
 restarting the server.  All is well.
+
+# Tutorial
+
+[Deploying to your server with a git push using Github webhooks and Forever.js](http://sethlakowske.com/articles/github-push-event-deployment/)
